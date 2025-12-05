@@ -12,7 +12,7 @@ soup = BeautifulSoup(resp.text, "html.parser")
 pdf_links = []
 for a in soup.find_all("a", href=True):
     href = a["href"]
-    if href.lower().endswith(".organi"):
+    if href.lower().endswith(".pdf"):
         full = urljoin(url, href)
         pdf_links.append(full)
 

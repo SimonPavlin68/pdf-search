@@ -24,8 +24,8 @@ HTML = """
     {% if results %}
         <p>Našel sem niz "{{ keywords }}" v {{ results|length }} dokumentih.</p>
         <ul>
-        {% for organi in results %}
-            <li><a href="{{ url_for('serve_file', folder=folder, filename=organi) }}" target="_blank">{{ organi }}</a></li>
+        {% for pdf in results %}
+            <li><a href="{{ url_for('serve_file', folder=folder, filename=pdf) }}" target="_blank">{{ pdf }}</a></li>
         {% endfor %}
         </ul>
     {% else %}
@@ -64,7 +64,8 @@ HTML = """
 def index():
     # Lokalni PDF-ji
     results = None
-    folder = "organi"
+    # folder = "D:\\simon\\lok\\LZS\\io\\stari zapisniki"
+    folder = "pdf"
     keywords = ""
 
     # Spletni PDF-ji
@@ -72,25 +73,15 @@ def index():
     web_url = "https://www.archery-si.org/organi/"
 
     if request.method == "POST":
-
-        # 🔥 1. Najprej reset rezultatov za obe iskanji
-        results = None
-        pdf_links = None
-
-        # ---------- LOKALNI PDF-ji ----------
+        # Če je vnos lokalnih PDF-jev
         if "folder" in request.form and "keywords" in request.form:
             folder = request.form["folder"]
             keywords = request.form["keywords"]
-
-            keywords_list = [
-                k.strip().lower() for k in keywords.split(",") if k.strip()
-            ]
-
-            results = []  # tukaj vedno začneš s praznim seznamom
-
+            keywords_list = [k.strip().lower() for k in keywords.split(",") if k.strip()]
+            results = []
             if os.path.isdir(folder) and keywords_list:
                 for fname in os.listdir(folder):
-                    if fname.lower().endswith(".organi"):
+                    if fname.lower().endswith(".pdf"):
                         path = os.path.join(folder, fname)
                         try:
                             reader = PdfReader(path)
@@ -99,27 +90,23 @@ def index():
                                 text = page.extract_text()
                                 if text:
                                     content += text.lower()
-
-                            # Če vsebuje VSE iskane nize → doda v rezultate
                             if all(k in content for k in keywords_list):
                                 results.append(fname)
-
                         except Exception as e:
                             print(f"Napaka pri branju {fname}: {e}")
 
-        # ---------- SPLETNI PDF-ji ----------
+        # Če je vnos URL spletne strani
         if "web_url" in request.form:
-            results = None  # 🔥 počisti stare lokalne rezultate
             web_url = request.form["web_url"]
-            pdf_links = []  # tudi tukaj reset
+            pdf_links = []
             if web_url:
                 try:
                     resp = requests.get(web_url)
                     resp.raise_for_status()
                     soup = BeautifulSoup(resp.text, "html.parser")
-                    for a in soup.find_all("a", href=True):
-                        href = a["href"]
-                        if href.lower().endswith(".organi"):
+                    for a in soup.find_all('a', href=True):
+                        href = a['href']
+                        if href.lower().endswith('.pdf'):
                             full_url = urljoin(web_url, href)
                             pdf_links.append(full_url)
                 except Exception as e:
@@ -130,7 +117,6 @@ def index():
         results=results, folder=folder, keywords=keywords,
         pdf_links=pdf_links, web_url=web_url
     )
-
 
 
 @app.route("/files/<path:folder>/<filename>")
