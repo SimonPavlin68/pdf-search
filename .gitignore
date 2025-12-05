@@ -1,0 +1,28 @@
+# Virtual environment
+venv/
+ENV/
+env/
+*.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+
+# VS Code (če uporabljaš kdaj)
+.vscode/
+
+# Mac / Linux / Windows sistemske datoteke
+.DS_Store
+Thumbs.db
