@@ -5,7 +5,7 @@ iskalna_beseda = "štab"
 mapa = r"D:\simon\lok\LZS\io\stari zapisniki"
 
 for ime in os.listdir(mapa):
-    if ime.lower().endswith(".pdf"):
+    if ime.lower().endswith(".organi"):
         pot = os.path.join(mapa, ime)
 
         try:
