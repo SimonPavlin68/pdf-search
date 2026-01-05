@@ -4,6 +4,7 @@ from pypdf import PdfReader
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+import re
 
 app = Flask(__name__)
 
